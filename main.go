@@ -25,10 +25,13 @@ var LAT_LNG_MAP = map[string][2]float64{
 
 var skyGlyphs = map[string]string{
 	"Sunny":              "☀️",
-	"Clear":              "🌕",
+	"Clear":              "🌙",
 	"Cloudy":             "☁️",
 	"Partly Cloudy":      "⛅",
 	"Patchy rain nearby": "🌧️",
+	"Light rain shower":  "🌧️",
+	"Moderate rain":      "🌧️",
+	"Overcast":           "☁️",
 	// Add more as needed…
 }
 
@@ -71,6 +74,8 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 	for i := int(currentDay); i < 8; i++ {
 		dayForecast := weatherApiResult["forecast"].(map[string]any)["forecastday"].([]any)[i-int(currentDay)].(map[string]any)
 
+		dayForecastDate := dayForecast["date"].(string)
+
 		hoursForecast := dayForecast["hour"].([]any)
 		var hoursForecastMap = map[string]any{}
 		// 3. For each day, check the hourly forecast
@@ -80,7 +85,9 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 			hoursForecastMap[fmt.Sprintf("%d:00", j)] = hourForecast
 		}
 
-		forecasts[time.Weekday(i%7).String()] = hoursForecastMap
+		forecastMapKey := fmt.Sprintf("%s (%s)", time.Weekday(i%7).String(), dayForecastDate)
+
+		forecasts[forecastMapKey] = hoursForecastMap
 	}
 
 	return forecasts
@@ -103,6 +110,27 @@ func sendEmail(from, password, text string) error {
 
 	fmt.Println("Email sent successfully")
 	return nil
+}
+
+func sortSliceByDateInParentheses(days []string) []string {
+	sort.Slice(days, func(i, j int) bool {
+
+		extract := func(s string) time.Time {
+			start := strings.LastIndex(s, "(") + 1
+			end := strings.LastIndex(s, ")")
+			t, err := time.Parse("2006-01-02", s[start:end])
+
+			if err != nil {
+				log.Fatalf("Error parsing date: %v", err)
+				return time.Time{}
+			}
+			return t
+		}
+
+		return extract(days[i]).Before(extract(days[j]))
+	})
+
+	return days
 }
 
 func calculateRemainingDaysInWeek() int {
@@ -146,10 +174,14 @@ func main() {
 
 	builder := &strings.Builder{}
 	forecasts := getForecastForRemainingDaysOfWeek(result)
-	for day, forecast := range forecasts {
+	days := slices.Collect(maps.Keys(forecasts))
+	// sort.Strings(days)
+	days = sortSliceByDateInParentheses(days)
+
+	for _, day := range days {
 		fmt.Fprintf(builder, "%s\n", day)
 
-		hoursMap := forecast.(map[string]any)
+		hoursMap := forecasts[day].(map[string]any)
 
 		hours := slices.Collect(maps.Keys(hoursMap))
 		sort.Strings(hours)
