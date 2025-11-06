@@ -93,6 +93,31 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 	return forecasts
 }
 
+func createEmailText(forecasts map[string]any) string {
+	builder := &strings.Builder{}
+	days := slices.Collect(maps.Keys(forecasts))
+	days = sortSliceByDateInParentheses(days)
+
+	for _, day := range days {
+		fmt.Fprintf(builder, "%s\n", day)
+
+		hoursMap := forecasts[day].(map[string]any)
+
+		hours := slices.Collect(maps.Keys(hoursMap))
+		sort.Strings(hours)
+
+		for _, hour := range hours {
+			trimmed := strings.TrimSpace(hoursMap[hour].(string))
+			icon := skyGlyphs[trimmed]
+			// fmt.Fprintf(builder, "  %s: %s\n", hour, icon)
+			fmt.Fprintf(builder, "  %s: %s %s\n", hour, trimmed, icon)
+		}
+	}
+
+	emailText := builder.String()
+	return emailText
+}
+
 func sendEmail(from, password, text string) error {
 	message := gomail.NewMessage()
 
@@ -172,29 +197,9 @@ func main() {
 		return
 	}
 
-	builder := &strings.Builder{}
 	forecasts := getForecastForRemainingDaysOfWeek(result)
-	days := slices.Collect(maps.Keys(forecasts))
-	// sort.Strings(days)
-	days = sortSliceByDateInParentheses(days)
+	emailText := createEmailText(forecasts)
 
-	for _, day := range days {
-		fmt.Fprintf(builder, "%s\n", day)
-
-		hoursMap := forecasts[day].(map[string]any)
-
-		hours := slices.Collect(maps.Keys(hoursMap))
-		sort.Strings(hours)
-
-		for _, hour := range hours {
-			trimmed := strings.TrimSpace(hoursMap[hour].(string))
-			icon := skyGlyphs[trimmed]
-			// fmt.Fprintf(builder, "  %s: %s\n", hour, icon)
-			fmt.Fprintf(builder, "  %s: %s %s\n", hour, trimmed, icon)
-		}
-	}
-
-	emailText := builder.String()
 	fmt.Println(emailText)
 
 	// send email about the report
