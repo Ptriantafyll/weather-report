@@ -11,6 +11,7 @@ import (
 	"os"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -80,9 +81,14 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 		var hoursForecastMap = map[string]any{}
 		// 3. For each day, check the hourly forecast
 		for j := workoutHours[0]; j <= workoutHours[len(workoutHours)-1]; j++ {
+			builder := &strings.Builder{}
 			hourForecast := hoursForecast[j].(map[string]any)["condition"].(map[string]any)["text"].(string)
+			fmt.Fprintf(builder, "%s", hourForecast)
 
-			hoursForecastMap[fmt.Sprintf("%d:00", j)] = hourForecast
+			hourTemp := strconv.FormatFloat(hoursForecast[j].(map[string]any)["temp_c"].(float64), 'f', 0, 64)
+			fmt.Fprintf(builder, " %s °C", hourTemp)
+
+			hoursForecastMap[fmt.Sprintf("%d:00", j)] = builder.String()
 		}
 
 		forecastMapKey := fmt.Sprintf("%s (%s)", time.Weekday(i%7).String(), dayForecastDate)
@@ -107,10 +113,14 @@ func createEmailText(forecasts map[string]any) string {
 		sort.Strings(hours)
 
 		for _, hour := range hours {
-			trimmed := strings.TrimSpace(hoursMap[hour].(string))
+			hourForecast := hoursMap[hour].(string)
+			hourWeather := hourForecast[:len(hourForecast)-6]
+			hourTemp := hourForecast[len(hourWeather):]
+
+			trimmed := strings.TrimSpace(hourWeather)
 			icon := skyGlyphs[trimmed]
 			// fmt.Fprintf(builder, "  %s: %s\n", hour, icon)
-			fmt.Fprintf(builder, "  %s: %s %s\n", hour, trimmed, icon)
+			fmt.Fprintf(builder, "  %s: %s %s (%s)\n", hour, trimmed, icon, hourTemp)
 		}
 	}
 
