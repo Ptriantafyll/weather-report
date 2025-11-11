@@ -72,7 +72,7 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 	currentDay := time.Now().Weekday()
 	workoutHours := [5]int{16, 17, 18, 19, 20}
 	// 2. Loop through the forecast days until the end of the week
-	for i := int(currentDay); i < 8; i++ {
+	for i := int(currentDay); i < int(currentDay)+3; i++ {
 		dayForecast := weatherApiResult["forecast"].(map[string]any)["forecastday"].([]any)[i-int(currentDay)].(map[string]any)
 
 		dayForecastDate := dayForecast["date"].(string)
