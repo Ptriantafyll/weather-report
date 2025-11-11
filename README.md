@@ -6,6 +6,7 @@ This project is a weather report designed to show the best possible days for an 
 
 1. `go get -u github.com/joho/godotenv`
 2. [weatherapi.com](https://www.weatherapi.com/) api key (free for 3-day forecast)
+3. App password for your email (e.g. for gmail: [generating gmail app password](https://support.google.com/mail/thread/205453566/how-to-generate-an-app-password?hl=en))
 
 ## How it works
 
@@ -18,7 +19,7 @@ Variables stored on .env:
 * WEATHERAPI_KEY - your weatherapi.com key
 * from           - the email from which you are sending
 * to             - the email to which you are sending
-* password       - email app password for the `from` email (e.g. [generating gmail app password](https://support.google.com/mail/thread/205453566/how-to-generate-an-app-password?hl=en))
+* password       - email app password for the `from` email
 
 Example email text: 
 ```
@@ -42,7 +43,17 @@ Thursday (2025-11-13)
   20:00: Clear 🌙 (13 °C)
 ```
 
-## Deployment
+## How to run
 
 1. go build .
 2. ./weather-report
+
+## Deployment
+
+One simple way to deploy this project is to have it run daily by a cronjob.
+
+You can do this by running:
+
+```
+echo "0 8 * * * root weather-report >> /var/log/weather-report.log 2>&1" >> /etc/cron.d/weather_report
+```
