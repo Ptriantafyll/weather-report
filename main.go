@@ -29,14 +29,16 @@ var LAT_LNG_MAP = map[string][2]float64{
 var workoutHours = [5]int{16, 17, 18, 19, 20}
 
 var skyGlyphs = map[string]string{
-	"Sunny":              "☀️",
-	"Clear":              "🌙",
-	"Cloudy":             "☁️",
-	"Partly Cloudy":      "⛅",
-	"Patchy rain nearby": "🌧️",
-	"Light rain shower":  "🌧️",
-	"Moderate rain":      "🌧️",
-	"Overcast":           "☁️",
+	"Sunny":                         "☀️",
+	"Clear":                         "🌙",
+	"Cloudy":                        "☁️",
+	"Partly Cloudy":                 "⛅",
+	"Patchy rain nearby":            "🌧️",
+	"Light rain shower":             "🌧️",
+	"Moderate rain":                 "🌧️",
+	"Light Drizzle":                 "🌧️",
+	"Moderate or heavy rain shower": "🌧️",
+	"Overcast":                      "☁️",
 	// Add more as needed…
 }
 
