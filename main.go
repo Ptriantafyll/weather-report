@@ -35,6 +35,7 @@ var skyGlyphs = map[string]string{
 	"Partly Cloudy":                 "⛅",
 	"Patchy rain nearby":            "🌧️",
 	"Light rain shower":             "🌧️",
+	"Light rain":                    "🌧️",
 	"Moderate rain":                 "🌧️",
 	"Light Drizzle":                 "🌧️",
 	"Moderate or heavy rain shower": "🌧️",
@@ -106,8 +107,14 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 
 	// 1. Get the current day
 	currentDay := time.Now().Weekday()
+	lastForecastDay := int(currentDay) + 3
+	if int(currentDay) == 6 || int(currentDay) == 7 {
+		lastForecastDay = 7
+	}
+
+	fmt.Println(int(currentDay))
 	// 2. Loop through the next 3 days
-	for i := int(currentDay); i < int(currentDay)+3; i++ {
+	for i := int(currentDay); i <= lastForecastDay; i++ {
 		dayForecast := weatherApiResult["forecast"].(map[string]any)["forecastday"].([]any)[i-int(currentDay)].(map[string]any)
 
 		dayForecastDate := dayForecast["date"].(string)
