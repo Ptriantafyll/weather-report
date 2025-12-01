@@ -107,7 +107,7 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 
 	// 1. Get the current day
 	currentDay := time.Now().Weekday()
-	lastForecastDay := int(currentDay) + 3
+	lastForecastDay := int(currentDay) + 2
 	if int(currentDay) == 6 || int(currentDay) == 7 {
 		lastForecastDay = 7
 	}
