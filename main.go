@@ -40,6 +40,8 @@ var skyGlyphs = map[string]string{
 	"Light Drizzle":                 "🌧️",
 	"Moderate or heavy rain shower": "🌧️",
 	"Overcast":                      "☁️",
+	"Patchy light drizzle":          "🌧️",
+	"Light drizzle":                 "🌧️",
 	// Add more as needed…
 }
 
