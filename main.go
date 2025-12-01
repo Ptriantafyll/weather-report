@@ -114,7 +114,6 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 		lastForecastDay = 7
 	}
 
-	fmt.Println(int(currentDay))
 	// 2. Loop through the next 3 days
 	for i := int(currentDay); i <= lastForecastDay; i++ {
 		dayForecast := weatherApiResult["forecast"].(map[string]any)["forecastday"].([]any)[i-int(currentDay)].(map[string]any)
