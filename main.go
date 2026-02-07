@@ -31,18 +31,20 @@ var workoutHours = [5]int{16, 17, 18, 19, 20}
 var skyGlyphs = map[string]string{
 	"Sunny":                         "☀️",
 	"Clear":                         "🌙",
-	"Cloudy":                        "☁️",
 	"Partly Cloudy":                 "⛅",
-	"Patchy rain nearby":            "🌧️",
-	"Light rain shower":             "🌧️",
-	"Light rain":                    "🌧️",
-	"Moderate rain":                 "🌧️",
-	"Light Drizzle":                 "🌧️",
-	"Moderate or heavy rain shower": "🌧️",
+	"Cloudy":                        "☁️",
 	"Overcast":                      "☁️",
+	"Patchy rain nearby":            "🌧️",
 	"Patchy light drizzle":          "🌧️",
+	"Light rain":                    "🌧️",
+	"Light rain shower":             "🌧️",
+	"Light Drizzle":                 "🌧️",
 	"Light drizzle":                 "🌧️",
-	"Thundery outbreaks in nearby":  "⛈️",
+	"Moderate rain":                 "🌧️",
+	"Moderate rain at times":        "🌧️",
+	"Moderate or heavy rain shower": "🌧️",
+	"Moderate or heavy rain in area with thunder": "⛈️",
+	"Thundery outbreaks in nearby":                "⛈️",
 	// Add more as needed…
 }
 
