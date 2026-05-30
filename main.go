@@ -106,7 +106,7 @@ func getForecastResult(fullURL string) (*http.Response, error) {
 // Returns:
 //
 //	A map where each key is a day (with date) and the value is a map of workout hours to weather summaries.
-func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[string]any {
+func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) (map[string]any, error) {
 	// I want to return the forecast for each day until the end of the week
 	var forecasts = map[string]any{}
 
@@ -116,6 +116,12 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 	if int(currentDay) == 6 || int(currentDay) == 7 {
 		lastForecastDay = 7
 	}
+
+	forecastDaySliceSize := len(weatherApiResult["forecast"].(map[string]any)["forecastday"].([]any))
+	if forecastDaySliceSize == 0 {
+		return nil, errors.New("No forecast for the next days - something wrong with the weather api")
+	}
+	
 
 	// 2. Loop through the next 3 days
 	for i := int(currentDay); i <= lastForecastDay; i++ {
@@ -142,7 +148,7 @@ func getForecastForRemainingDaysOfWeek(weatherApiResult map[string]any) map[stri
 		forecasts[forecastMapKey] = hoursForecastMap
 	}
 
-	return forecasts
+	return forecasts, nil
 }
 
 // createEmailText formats the forecast data into a human-readable email body.
@@ -255,7 +261,7 @@ func calculateRemainingDaysInWeek() int {
 }
 
 func main() {
-	err := godotenv.Load(".env")
+	err := godotenv.Load("/usr/local/src/.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
@@ -288,8 +294,16 @@ func main() {
 		return
 	}
 
-	forecasts := getForecastForRemainingDaysOfWeek(result)
-	emailText := createEmailText(forecasts)
+	forecasts, err := getForecastForRemainingDaysOfWeek(result)
+	emailText := ""
+	if err !=nil {
+		fmt.Println("Something wrong with the weather api, continuing to send email with the message")
+		emailText = "The weather api failed, no forecast today :("
+	} else {
+		emailText = createEmailText(forecasts)
+	}
+	
+
 
 	fmt.Println(emailText)
 
